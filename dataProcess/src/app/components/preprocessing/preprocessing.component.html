@@ -1,0 +1,153 @@
+<div class="p-6 bg-white shadow-lg rounded-lg border border-[#EBD3F8]/20">
+  <h2 class="text-xl font-semibold mb-4 text-[#7A1CAC]">Pre-processing</h2>
+
+  <div *ngIf="dataset" class="space-y-6">
+    <!-- Data Cleaning Section -->
+    <div class="p-4 bg-[#EBD3F8]/10 rounded-lg mb-6">
+      <h3 class="text-lg font-medium text-[#7A1CAC] mb-3">Data Cleaning</h3>
+      <div class="flex items-center gap-4">
+        <button (click)="removeMissingValues()" 
+                [disabled]="hasRemovedMissingValues"
+                class="px-4 py-2 bg-[#7A1CAC] text-white rounded-lg hover:bg-[#8f21c9] 
+                       transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
+          Remove Missing Values
+        </button>
+        <span *ngIf="hasRemovedMissingValues" class="text-sm text-green-600">
+          ✓ Removed {{ removedRowsCount }} rows with missing values
+        </span>
+      </div>
+    </div>
+
+    <!-- Chi-squared Test Section -->
+    <div class="p-4 bg-[#EBD3F8]/10 rounded-lg mb-6">
+      <h3 class="text-lg font-medium text-[#7A1CAC] mb-3">Chi-squared Test</h3>
+      <div class="space-y-4">
+        <div class="flex flex-col md:flex-row gap-4">
+          <div class="w-full md:w-1/2">
+            <label class="text-sm font-medium text-gray-700 block mb-2">Select First Column:</label>
+            <select [(ngModel)]="selectedColumn1"
+                    class="w-full p-2 border-2 border-[#EBD3F8] rounded-lg 
+                           focus:outline-none focus:border-[#7A1CAC] transition-all duration-300">
+              <option *ngFor="let colIndex of numericColumns" [value]="colIndex">
+                {{ dataset.headers[colIndex] }}
+              </option>
+            </select>
+          </div>
+          <div class="w-full md:w-1/2">
+            <label class="text-sm font-medium text-gray-700 block mb-2">Select Second Column:</label>
+            <select [(ngModel)]="selectedColumn2"
+                    class="w-full p-2 border-2 border-[#EBD3F8] rounded-lg 
+                           focus:outline-none focus:border-[#7A1CAC] transition-all duration-300">
+              <option *ngFor="let colIndex of numericColumns" [value]="colIndex">
+                {{ dataset.headers[colIndex] }}
+              </option>
+            </select>
+          </div>
+        </div>
+        <button (click)="calculateChiSquared()" 
+                class="px-4 py-2 bg-[#7A1CAC] text-white rounded-lg hover:bg-[#8f21c9] 
+                       transition-all duration-300">
+          Calculate Chi-squared
+        </button>
+        <div *ngIf="chiSquaredResult !== null" class="mt-4 p-3 bg-white rounded-lg">
+          <strong class="text-[#7A1CAC]">Chi-squared Result:</strong>
+          <span class="ml-2">{{ chiSquaredResult }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Normalization Section -->
+    <div class="p-4 bg-[#EBD3F8]/10 rounded-lg">
+      <h3 class="text-lg font-medium text-[#7A1CAC] mb-3">Normalization</h3>
+      <div class="space-y-4">
+        <div class="flex flex-col md:flex-row gap-4">
+          <div class="w-full md:w-1/2">
+            <label class="text-sm font-medium text-gray-700 block mb-2">Select Column:</label>
+            <select [(ngModel)]="selectedColumnIndex"
+                    class="w-full p-2 border-2 border-[#EBD3F8] rounded-lg 
+                           focus:outline-none focus:border-[#7A1CAC] transition-all duration-300">
+              <option *ngFor="let colIndex of numericColumns" [value]="colIndex">
+                {{ dataset.headers[colIndex] }}
+              </option>
+            </select>
+          </div>
+          <div class="w-full md:w-1/2">
+            <label class="text-sm font-medium text-gray-700 block mb-2">Normalization Method:</label>
+            <select [(ngModel)]="normalizationMethod"
+                    class="w-full p-2 border-2 border-[#EBD3F8] rounded-lg 
+                           focus:outline-none focus:border-[#7A1CAC] transition-all duration-300">
+              <option value="minmax">Min-Max</option>
+              <option value="zscore">Z-Score</option>
+              <option value="decimal">Decimal Scaling</option>
+            </select>
+          </div>
+        </div>
+        <button (click)="applyNormalization()" 
+                class="px-4 py-2 bg-[#7A1CAC] text-white rounded-lg hover:bg-[#8f21c9] 
+                       transition-all duration-300">
+          Apply Normalization
+        </button>
+        <div *ngIf="normalizedData.length" class="mt-4 p-3 bg-white rounded-lg overflow-x-auto">
+          <strong class="text-[#7A1CAC] block mb-2">Normalized Values:</strong>
+          <table class="w-full">
+            <thead>
+              <tr>
+                <th class="px-4 py-2 text-left text-sm font-medium text-[#7A1CAC]">Original Value</th>
+                <th class="px-4 py-2 text-left text-sm font-medium text-[#7A1CAC]">Normalized Value</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let value of normalizedData.slice(0, 10); let i = index" class="border-t border-[#EBD3F8]">
+                <td class="px-4 py-2 text-sm">{{ getColumnData(selectedColumnIndex!)[i] }}</td>
+                <td class="px-4 py-2 text-sm">{{ value }}</td>
+              </tr>
+            </tbody>
+          </table>
+          <div *ngIf="normalizedData.length > 10" class="mt-2 text-sm text-gray-500 italic">
+            Showing first 10 rows...
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Discretization Section -->
+    <div class="p-4 bg-[#EBD3F8]/10 rounded-lg">
+      <h3 class="text-lg font-medium text-[#7A1CAC] mb-3">Discretization</h3>
+      <div class="space-y-4">
+        <div class="flex flex-col md:flex-row gap-4">
+          <div class="w-full md:w-1/2">
+            <label class="text-sm font-medium text-gray-700 block mb-2">Number of Bins:</label>
+            <input type="number" [(ngModel)]="numberOfBins" min="2" max="10"
+                   class="w-full p-2 border-2 border-[#EBD3F8] rounded-lg 
+                          focus:outline-none focus:border-[#7A1CAC] transition-all duration-300">
+          </div>
+        </div>
+        <button (click)="discretizeBinning()" 
+                class="px-4 py-2 bg-[#7A1CAC] text-white rounded-lg hover:bg-[#8f21c9] 
+                       transition-all duration-300">
+          Apply Binning
+        </button>
+        <div *ngIf="binnedData.length" class="mt-4 p-3 bg-white rounded-lg overflow-x-auto">
+          <strong class="text-[#7A1CAC] block mb-2">Binned Values:</strong>
+          <table class="w-full">
+            <thead>
+              <tr>
+                <th class="px-4 py-2 text-left text-sm font-medium text-[#7A1CAC]">Original Value</th>
+                <th class="px-4 py-2 text-left text-sm font-medium text-[#7A1CAC]">Bin Number</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let value of binnedData.slice(0, 10); let i = index" class="border-t border-[#EBD3F8]">
+                <td class="px-4 py-2 text-sm">{{ getColumnData(selectedColumnIndex!)[i] }}</td>
+                <td class="px-4 py-2 text-sm">{{ value }}</td>
+              </tr>
+            </tbody>
+          </table>
+          <div *ngIf="binnedData.length > 10" class="mt-2 text-sm text-gray-500 italic">
+            Showing first 10 rows...
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,53 @@
+<div class="p-6 bg-white shadow-lg rounded-lg border border-[#EBD3F8]/20">
+  <h2 class="text-xl font-semibold mb-4 text-[#7A1CAC]">Upload Dataset</h2>
+
+  <div class="relative mb-6">
+    <input type="file" accept=".csv" (change)="onFileUpload($event)"
+           class="w-full p-3 border-2 border-[#EBD3F8] rounded-lg hover:border-[#7A1CAC] 
+                  transition-all duration-300 focus:outline-none focus:border-[#7A1CAC]
+                  file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0
+                  file:bg-[#7A1CAC] file:text-white
+                  hover:file:bg-[#8f21c9]" />
+  </div>
+
+  <div *ngIf="hasData" class="space-y-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="p-4 bg-[#EBD3F8]/10 rounded-lg">
+        <h3 class="text-lg font-medium text-[#7A1CAC] mb-2">Numeric Columns</h3>
+        <div class="space-y-1">
+          <div *ngFor="let col of numericColumns" class="px-3 py-1 bg-white rounded">
+            {{ col }}
+          </div>
+        </div>
+      </div>
+      
+      <div class="p-4 bg-[#EBD3F8]/10 rounded-lg">
+        <h3 class="text-lg font-medium text-[#7A1CAC] mb-2">Categorical Columns</h3>
+        <div class="space-y-1">
+          <div *ngFor="let col of categoricalColumns" class="px-3 py-1 bg-white rounded">
+            {{ col }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="p-4 bg-[#EBD3F8]/10 rounded-lg">
+      <h3 class="text-lg font-medium text-[#7A1CAC] mb-2">Data Preview (First 10 rows)</h3>
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <tr>
+            <th *ngFor="let header of numericColumns.concat(categoricalColumns)" 
+                class="px-4 py-2 text-left text-sm font-medium text-[#7A1CAC]">
+              {{ header }}
+            </th>
+          </tr>
+          <tr *ngFor="let row of dataPreview" class="border-t border-[#EBD3F8]">
+            <td *ngFor="let cell of row" class="px-4 py-2 text-sm">
+              {{ cell }}
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

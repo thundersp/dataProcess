@@ -1,0 +1,46 @@
+<div class="p-6 bg-white shadow-lg rounded-lg border border-[#EBD3F8]/20" *ngIf="dataset">
+  <h2 class="text-xl font-semibold mb-4 text-[#7A1CAC]">Visualization</h2>
+
+  <div class="flex flex-col md:flex-row gap-6 mb-6">
+    <div class="w-full md:w-auto">
+      <label class="text-sm font-medium text-gray-700 block mb-2">Select Column:</label>
+      <select [(ngModel)]="selectedColumnIndex" 
+              (change)="onColumnChange(selectedColumnIndex!)"
+              class="w-full p-2 border-2 border-[#EBD3F8] rounded-lg 
+                     focus:outline-none focus:border-[#7A1CAC] transition-all duration-300">
+        <option *ngFor="let i of numericColumns" [value]="i">
+          {{ dataset.headers[i] }}
+        </option>
+      </select>
+    </div>
+
+    <div class="w-full md:w-auto">
+      <label class="text-sm font-medium text-gray-700 block mb-2">Chart Type:</label>
+      <select [(ngModel)]="chartType" 
+              (change)="onChartTypeChange(chartType)"
+              class="w-full p-2 border-2 border-[#EBD3F8] rounded-lg 
+                     focus:outline-none focus:border-[#7A1CAC] transition-all duration-300">
+        <option value="bar">Bar Chart</option>
+        <option value="line">Line Chart</option>
+        <option value="scatter">Scatter Plot</option>
+        <option value="comparison">Column Comparison</option>
+      </select>
+    </div>
+
+    <div *ngIf="chartType === 'comparison'" class="w-full md:w-auto">
+      <label class="text-sm font-medium text-gray-700 block mb-2">Compare With:</label>
+      <select [(ngModel)]="selectedColumn2Index"
+              (change)="renderChart()"
+              class="w-full p-2 border-2 border-[#EBD3F8] rounded-lg 
+                     focus:outline-none focus:border-[#7A1CAC] transition-all duration-300">
+        <option *ngFor="let i of numericColumns" [value]="i">
+          {{ dataset.headers[i] }}
+        </option>
+      </select>
+    </div>
+  </div>
+
+  <div class="p-4 bg-[#EBD3F8]/10 rounded-lg">
+    <canvas #chartCanvas class="w-full" style="height: 400px;"></canvas>
+  </div>
+</div>
