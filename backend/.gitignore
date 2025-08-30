@@ -1,0 +1,5 @@
+backend/__pycache__/
+dataapi/__pycache__/
+dataapi/migrations/
+env/
+/media/
